@@ -20,6 +20,25 @@ class BasketPlanApp extends StatelessWidget {
   }
 }
 
+class Drill {
+  final String name;
+  final int minutes;
+  final String note;
+  final IconData icon;
+
+  const Drill({
+    required this.name,
+    required this.minutes,
+    required this.note,
+    required this.icon,
+  });
+
+  @override
+  String toString() => '$name - $minutes min';
+}
+
+enum Difficulty { easy, medium, hard }
+
 class InputPage extends StatelessWidget {
   const InputPage({super.key});
 
