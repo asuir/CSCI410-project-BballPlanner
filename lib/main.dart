@@ -64,6 +64,35 @@ class _InputPageState extends State<InputPage> {
     super.dispose();
   }
 
+  void _generatePlan() {
+    final raw = _minutesController.text.trim();
+    final minutes = int.tryParse(raw);
+
+    if (minutes == null || minutes < 10 || minutes > 180) {
+      _showError('Enter minutes between 10 and 180.');
+      return;
+    }
+
+    final plan = PlanGenerator.generate(
+      focus: _focus,
+      minutes: minutes,
+      difficulty: _difficulty,
+    );
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ResultPage(plan: plan),
+      ),
+    );
+  }
+
+  void _showError(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(msg), behavior: SnackBarBehavior.floating),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
@@ -176,7 +205,7 @@ class _InputPageState extends State<InputPage> {
           SizedBox(
             height: 52,
             child: ElevatedButton.icon(
-              onPressed: () {},
+              onPressed: _generatePlan,
               icon: const Icon(Icons.auto_awesome),
               label: const Text('Generate Plan'),
               style: ElevatedButton.styleFrom(
