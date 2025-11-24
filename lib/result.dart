@@ -9,7 +9,7 @@ class ResultPage extends StatelessWidget {
       appBar: AppBar(title: const Text('Your Session')),
       body: const Center(
         child: Text(
-          'Results page coming next...',
+          'Results page',
           style: TextStyle(fontSize: 18),
         ),
       ),
