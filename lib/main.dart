@@ -190,3 +190,115 @@ class _InputPageState extends State<InputPage> {
     );
   }
 }
+
+class TrainingPlan {
+  final String focus;
+  final Difficulty difficulty;
+  final int minutes;
+  final double loadScore;
+  final List<Drill> drills;
+
+  TrainingPlan({
+    required this.focus,
+    required this.difficulty,
+    required this.minutes,
+    required this.loadScore,
+    required this.drills,
+  });
+}
+
+class PlanGenerator {
+  static TrainingPlan generate({
+    required String focus,
+    required int minutes,
+    required Difficulty difficulty,
+  }) {
+    final mult = switch (difficulty) {
+      Difficulty.easy => 1.0,
+      Difficulty.medium => 1.3,
+      Difficulty.hard => 1.6,
+    };
+
+    final focusPool = _drillPoolForFocus(focus);
+
+    final drillCount = minutes <= 25
+        ? 3
+        : minutes <= 45
+        ? 4
+        : minutes <= 70
+        ? 5
+        : 6;
+
+    final selected = focusPool.take(drillCount).toList();
+
+    final base = (minutes / drillCount).floor();
+    int remainder = minutes - base * drillCount;
+
+    final drills = <Drill>[];
+    for (final d in selected) {
+      final add = remainder > 0 ? 1 : 0;
+      if (remainder > 0) remainder--;
+
+      drills.add(
+        Drill(
+          name: d.name,
+          minutes: base + add,
+          note: d.note,
+          icon: d.icon,
+        ),
+      );
+    }
+
+    final loadScore = minutes * mult;
+
+    return TrainingPlan(
+      focus: focus,
+      difficulty: difficulty,
+      minutes: minutes,
+      loadScore: loadScore,
+      drills: drills,
+    );
+  }
+
+  static List<Drill> _drillPoolForFocus(String focus) {
+    switch (focus) {
+      case 'Handles':
+        return const [
+          Drill(name: 'Stationary Pound Dribbles', minutes: 0, note: 'Low + hard reps', icon: Icons.sports_basketball),
+          Drill(name: 'Cross / Between / Behind Combo', minutes: 0, note: 'Stay relaxed', icon: Icons.sync_alt),
+          Drill(name: 'Cone Slalom Dribble', minutes: 0, note: 'Eyes up', icon: Icons.construction),
+          Drill(name: 'Change-of-Pace Drives', minutes: 0, note: 'Explode out of moves', icon: Icons.flash_on),
+          Drill(name: 'Two-Ball Dribbling', minutes: 0, note: 'Control both hands', icon: Icons.all_inclusive),
+          Drill(name: 'Finishing Series', minutes: 0, note: 'Footwork focus', icon: Icons.directions_run),
+        ];
+      case 'Shooting':
+        return const [
+          Drill(name: 'Form Shooting Close Range', minutes: 0, note: 'Perfect mechanics', icon: Icons.my_location),
+          Drill(name: 'Midrange Spots (5 spots)', minutes: 0, note: 'Game speed', icon: Icons.place),
+          Drill(name: 'Catch-and-Shoot', minutes: 0, note: 'Quick feet set', icon: Icons.sports_handball),
+          Drill(name: 'Off-Dribble Pull-ups', minutes: 0, note: '1–2 stop', icon: Icons.timeline),
+          Drill(name: 'Free Throw Routine', minutes: 0, note: 'Same ritual', icon: Icons.check_circle_outline),
+          Drill(name: 'Conditioned Shooting', minutes: 0, note: 'Shoot while tired', icon: Icons.favorite_border),
+        ];
+      case 'Defense':
+        return const [
+          Drill(name: 'Slide & Recover', minutes: 0, note: 'Low stance', icon: Icons.swap_horiz),
+          Drill(name: 'Closeout Technique', minutes: 0, note: 'Hands high', icon: Icons.open_in_full),
+          Drill(name: 'Mirror Footwork', minutes: 0, note: 'React fast', icon: Icons.visibility),
+          Drill(name: 'Zig-Zag Containment', minutes: 0, note: 'Cut angles', icon: Icons.route),
+          Drill(name: 'Box-out Reps', minutes: 0, note: 'Hit then get', icon: Icons.shield_outlined),
+          Drill(name: 'Steal Timing', minutes: 0, note: 'Don’t reach', icon: Icons.timer),
+        ];
+      default:
+        return const [
+          Drill(name: 'Court Sprints', minutes: 0, note: 'Full speed', icon: Icons.speed),
+          Drill(name: 'Suicides (lines)', minutes: 0, note: 'Touch every line', icon: Icons.show_chart),
+          Drill(name: 'Defensive Slides Intervals', minutes: 0, note: '20s on / 10s off', icon: Icons.swap_calls),
+          Drill(name: 'Jump Rope / High Knees', minutes: 0, note: 'Stay light', icon: Icons.fitness_center),
+          Drill(name: 'Core Circuit', minutes: 0, note: 'Plank + twists', icon: Icons.self_improvement),
+          Drill(name: 'Cool-down Mobility', minutes: 0, note: 'Stretch hips/ankles', icon: Icons.spa),
+        ];
+    }
+  }
+}
+
